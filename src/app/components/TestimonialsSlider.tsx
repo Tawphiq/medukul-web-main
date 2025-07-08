@@ -45,6 +45,7 @@ const testimonials = [
 
 const TestimonialsSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(0);
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
@@ -61,8 +62,25 @@ const TestimonialsSlider = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    // Set initial window width and add resize listener
+    const updateWindowWidth = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
+      window.addEventListener('resize', updateWindowWidth);
+      
+      return () => {
+        window.removeEventListener('resize', updateWindowWidth);
+      };
+    }
+  }, []);
+
   const getVisibleTestimonials = () => {
-    const visibleCount = window.innerWidth >= 768 ? 7 : 3; // Show 3 on either side on desktop, 1 on mobile
+    // Use windowWidth state for proper responsive behavior
+    const visibleCount = windowWidth >= 768 ? 7 : 3; // Show 7 on desktop, 3 on mobile
     const half = Math.floor(visibleCount / 2);
     const start =
       (currentIndex - half + testimonials.length) % testimonials.length;
